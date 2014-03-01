@@ -1,6 +1,6 @@
 /*global define */
-define([], function () {
+define(['d3'], function (d3) {
     'use strict';
 
-    return '\'Allo \'Allo!';
+console.log(d3)
 });

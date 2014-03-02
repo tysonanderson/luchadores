@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.chart div {
+  font: 10px sans-serif;
+  background-color: steelblue;
+  text-align: right;
+  padding: 3px;
+  margin: 1px;
+  color: white;
+}
+
+</style>
+<div class="chart"></div>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+
+function draw(svg, shapeData, dataPoints, pointIdx, aspectIdx) {
+ 
+
+  var dataPoint = dataPoints[pointIdx][aspectIdx];
+  var min = d3.min(dataPoints, function(d) { return d[aspectIdx]; });
+  var max = d3.max(dataPoints, function(d) { return d[aspectIdx]; });
+  console.log("min = " + min);
+  console.log("max = " + max);
+  console.log("dataPoint = " + dataPoint);
+  var rotate = d3.scale.linear().domain([min,max]).range([0,10]);
+  var scale = d3.scale.linear().domain([min, max]).range([1, 2, 3]);
+  var interpolation = d3.scale.linear().domain([min, max]).range(["cardinal-closed", "linear-closed", "basis-closed"]);
+  var baseShape = d3.scale.linear().domain([min, max]).range([0,1,2]);
+
+  console.log("rotate= "+ rotate(dataPoint));
+  console.log("scale = " + scale(dataPoint));
+  console.log("baseShapeScale = " + baseShape(dataPoint));
+
+  var shape = svg.append("g").attr("transform", "rotate("+rotate(dataPoint)+"), scale("+scale(dataPoint)+")");
+
+  //The line SVG Path we draw
+  var chosenShape = shapeData[baseShape(dataPoint)];
+  var shapeFunction = d3.svg.line()
+    .x(function(d) { return d.x; })
+    .y(function(d) { return d.y; }).interpolate(interpolation(dataPoint));  
+    var shapeGraph = 
+      shape.append("path")
+      .attr("d", shapeFunction(chosenShape))
+      .attr("stroke", "blue")
+      .attr("stroke-width", 2)
+      .attr("fill", "none");  
+} 
+
+
+//The SVG Container
+var svgContainer = d3.select("body").append("svg")
+                                    .attr("width", 200)
+                                    .attr("height", 200);
+
+var noseData = [
+  [ { "x": 1,   "y": 40},  { "x": 35,  "y": 40}, { "x": 35,  "y": 1}],
+  [ { "x": 35,   "y": 75},  { "x": 70,  "y": 75}, { "x": 70,  "y": 35}],
+  [ { "x": 70,   "y": 110},  { "x": 105,  "y": 75}, { "x": 70,  "y": 35}]];
+
+
+var sampleData = [
+  [1,3,5,7], 
+  [2,4,6,8]
+];
+
+
+draw(svgContainer, noseData, sampleData, 1, 2);
+</script>

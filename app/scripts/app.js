@@ -4,8 +4,8 @@ define(['d3'], function (d3) {
 
     var margin = {top: 20, right: 20, bottom: 20, left: 20},
 	    padding = {top: 60, right: 60, bottom: 60, left: 60},
-	    outerWidth = 960,
-	    outerHeight = 500,
+	    outerWidth = 1100,
+	    outerHeight = 700,
 	    innerWidth = outerWidth - margin.left - margin.right,
 	    innerHeight = outerHeight - margin.top - margin.bottom,
 	    width = innerWidth - padding.left - padding.right,
@@ -21,9 +21,6 @@ define(['d3'], function (d3) {
 	var eyeBorderColors = d3.scale.ordinal().domain([0,1]).range(colorbrewer.Accent[8]);
 	var faceColors = d3.scale.ordinal().domain([0,1]).range(colorbrewer.Dark2[8]);
 
-
-	var face = svg.append("use").attr("xlink:href","#face")
-		.attr("fill", faceColors(Math.floor(Math.random() * 9)) )
 
 
 	// var eye = svg.append("g")
@@ -79,7 +76,47 @@ define(['d3'], function (d3) {
 
 	var mouths = [[{"x":0, "y":0},{"x":5, "y":0}]];
 
-	
+	var eyeSize;
+	var noseSize;
+
+	var json = d3.json("veg1.json", function(data) {
+	  var avgs=d3.nest()
+	      .key(function(d) {return d.postal_code;})
+	      .sortKeys(d3.ascending)
+	      .rollup(function(d) {
+	        return {
+	          rating:d3.mean(d,function(g) {return +g.weighted_rating;}),
+	          rating_count:d3.mean(d,function(g) {return +g.rating_count})
+	        };
+	      })
+	      .entries(data.entries);
+
+	      eyeSize = d3.scale.linear()
+	      	.domain( [1, 5])
+	      	.range([1,3]);
+
+	      noseSize = d3.scale.linear()
+	      	.domain( [1, 5])
+	      	.range([2,5]);
+
+
+	      var xcor = -200;
+	      var ycor = 0;
+	    //avgs = avgs.splice(2, avgs.length)
+	  
+	    for(var i=0; i < avgs.length; i++){
+	    	xcor += 200
+	    	if(xcor > 900){
+	    		xcor = 0;
+	    		ycor += 300;
+	    	}
+	    	
+	    	drawFace(avgs[i], xcor,ycor);
+	    }
+
+	});
+
+
 
 
 	function drawFace(data, x, y){
@@ -87,6 +124,9 @@ define(['d3'], function (d3) {
 		var g = svg.append("g")
 			.attr("class", "face")
 			.attr("transform", "translate(" + x + "," + y + " )");
+
+		var face = g.append("use").attr("xlink:href","#face")
+			.attr("fill", faceColors(Math.floor(Math.random() * 9)) )
 
 		//var interpolation = d3.scale.linear().domain([min, max]).range(["cardinal-closed", "linear-closed", "basis-closed"]);
 		var primaryColor = eyeBorderColors(Math.floor(Math.random() * 9));
@@ -99,33 +139,45 @@ define(['d3'], function (d3) {
 		    //.interpolate(interpolation(data.?));
 		    .interpolate("basis-closed");
 
-		var eyeLeft = g.append("g").attr("transform", "translate(30,50),scale(2,2)")
+		    console.log((+data.values.rating>0) ? +data.values.rating : 1 )
+		    var es = eyeSize((+data.values.rating>0) ? +data.values.rating : 1)
+		    var ns = noseSize((+data.values.rating>0) ? +data.values.rating : 1)
+		    console.log(es)
+
+		    var stroke_width = Math.random() * 3;
+
+		    var eyeType = Math.floor(Math.random() * 3);
+
+		var eyeLeft = g.append("g").attr("transform", "translate(30,50),scale("+ es +","+ es +")")
 			.append("path")
-			.attr("d", shapeFunction(eyes[1]))
+			.attr("d", shapeFunction(eyes[eyeType]))
 		    .attr("stroke", primaryColor )
 		    .attr("fill", secondaryColor )
-		    .attr("stroke-width", 2);
+		    .attr("stroke-width", stroke_width);
 
-		var eyeRight = g.append("g").attr("transform", "translate(125,50),scale(-2,2)")
+		var eyeRight = g.append("g").attr("transform", "translate(125,50),scale("+ es* -1 +","+ es +")")
 			.append("path")
-			.attr("d", shapeFunction(eyes[1]))
+			.attr("d", shapeFunction(eyes[eyeType]))
 		    .attr("stroke", primaryColor )
 		    .attr("fill", secondaryColor )
-		    .attr("stroke-width", 2);
+		    .attr("stroke-width", stroke_width);
 
-		var nose = g.append("g").attr("transform", "translate(70,100),scale(3,2)")
+		var nose = g.append("g").attr("transform", "translate(100,100),scale("+ ns* -1 +","+ ns +")")
 			.append("path")
 			.attr("d", shapeFunction(noses[0]))
 		    .attr("stroke", primaryColor )
 		    .attr("fill", secondaryColor )
-		    .attr("stroke-width", 2);
+		    .attr("stroke-width", stroke_width);
 
 		var mouth = g.append("g").attr("transform", "translate(55,150),scale(10,5)")
 			.append("path")
 			.attr("d", shapeFunction(mouths[0]))
 		    .attr("stroke", primaryColor )
 		    .attr("fill", secondaryColor )
-		    .attr("stroke-width", 2);
+		    .attr("stroke-width", stroke_width);
+
+		var t = g.append("text")
+			.text(data.key)
 
 	}
 
@@ -148,7 +200,6 @@ var sampleData = [
   [2,4,6,8]
 ];
 
-drawFace({});
 // draw(nose, noses, sampleData, 0,3);
 // draw(eye, eyes, sampleData, 1,2);
 // draw(eye2, eyes, sampleData, 1,2);

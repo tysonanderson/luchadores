@@ -6,7 +6,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>luchadores</title>
+        <title>Luchadores</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width">
         <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
@@ -18,20 +18,17 @@
         <!-- endbuild -->
     </head>
     <body>
+        <svg id="container">
+            <defs>
+            <path id="face" fill="none" stroke="#231F20" stroke-width="2" stroke-miterlimit="10" d="M78.488,209.956c8.83,0,21.584,0,49.055-23.546
+    s29.433-95.167,29.433-111.846S143.641,0,78.488,0S0,57.885,0,74.564s1.962,88.299,29.433,111.846S69.658,209.956,78.488,209.956"/>
+            </path>
+            </defs>
+        </svg>
+
         <!--[if lt IE 10]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
-
-
-        <div class="hero-unit">
-          <h1>'Allo, 'Allo!</h1>
-          <p>You now have</p>
-          <ul>
-            <li>HTML5 Boilerplate</li>
-            <li>Modernizr</li>
-            <li>RequireJS</li>
-          </ul>
-        </div>
 
 
         <!-- build:js scripts/vendor.js -->
@@ -39,16 +36,6 @@
         <script src="bower_components/jquery/jquery.js"></script>
         <!-- endbower -->
         <!-- endbuild -->
-
-        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
-        <script>
-            (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
-            function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
-            e=o.createElement(i);r=o.getElementsByTagName(i)[0];
-            e.src='//www.google-analytics.com/analytics.js';
-            r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-            ga('create','UA-XXXXX-X');ga('send','pageview');
-        </script>
 
         <!-- build:js scripts/main.js -->
         <script data-main="scripts/main" src="bower_components/requirejs/require.js"></script>
